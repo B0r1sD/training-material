@@ -26,6 +26,17 @@ requirements:
     topic_name: galaxy-interface
     tutorials:
       - upload-rules
+
+recordings:
+- captioners:
+  - prodromus
+  date: '2021-05-15'
+  galaxy_version: '21.01'
+  length: 40M
+  youtube_id: ogu-NBTP-DM
+  speakers:
+  - prodromus
+
 ---
 
 Traditionally, after a list of run accessions has been filtered on the NCBI website, the accessions are used to download and extract fastq using the SRA toolkit to enter into the next steps of the workflow. A newer compressed data type, generated from raw submitted data containing SARS-CoV-2 sequence, is also accessible to Galaxy users from SRA in the Cloud.
@@ -104,7 +115,7 @@ We will import the JSON files into Galaxy to query them directory, however the f
 >
 {: .comment}
 
-{% assign servers = list_usegalaxy_servers_shuffle %}
+{% assign servers = nil | list_usegalaxy_servers_shuffle %}
 
 > <hands-on-title>Loading SRA Aligned Read Format (SARF) Object Metadata URLs into Galaxy</hands-on-title>
 >

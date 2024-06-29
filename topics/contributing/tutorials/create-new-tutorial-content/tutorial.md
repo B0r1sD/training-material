@@ -325,7 +325,7 @@ We can also cross-reference images inside our Markdown with an anchor. For examp
 
 As an example for this image:
 
-![alt text]({{site.baseurl}}/topics/metagenomics/images/plasmid-metagenomics-nanopore/sequence_method.jpg "Example of an image with a caption ")
+![alt text]({{site.baseurl}}/topics/microbiome/images/plasmid-metagenomics-nanopore/sequence_method.jpg "Example of an image with a caption ")
 
 {% raw %}
 ```markdown
@@ -348,6 +348,8 @@ Surround your math expression with two `$` signs on each side (like in LaTeX mat
 - block expressions, *e.g.* `$$ 5 + 5 $$` will be rendered in its own line block as
 
    $$ 5 + 5 $$
+
+- Note: if inline mode is not working correctly, you can force it by using the following delimiters instead of dollar signs: `\\( 5 +5 \\)`
 
 Dollar signs are therefore *reserved characters* for instructing the templating system to open/close LaTeX math blocks. If you want to use a `$` within your expression, you will need to *escape* it: `$$ a + 3\$ = 5\$ $$` will be rendered as: $$ a + 3\$ = 5\$ $$
 
@@ -919,10 +921,50 @@ The alternative is to figure out the ID for the tool you want to use:
 
 ![Finding the tool ID](../../images/tool-id.png)
 
+## Example Histories
+
+If you have example input histories for your tutorial, perhaps for specific servers where trainees will often follow a tutorial but want to skip a slow input step, then you can provide example histories as part of your tutorial.
+
+> <code-in-title>Tutorial Frontmatter</code-in-title>
+> ```yaml
+> answer_histories:
+>   - label: "UseGalaxy.eu"
+>     history: https://humancellatlas.usegalaxy.eu/u/j.jakiela/h/generating-a-single-cell-matrix-using-alevin-3
+>   - label: "Older Alevin version"
+>     history: https://humancellatlas.usegalaxy.eu/u/wendi.bacon.training/h/cs1pre-processing-with-alevin---answer-key
+>     date: 2024-01-01
+> input_histories:
+>   - label: "UseGalaxy.eu"
+>     history: https://humancellatlas.usegalaxy.eu/u/wendi.bacon.training/h/cs1pre-processing-with-alevin---input-1
+> ```
+{: .code-in}
+
+> <code-out-title>Rendered Tutorial</code-out-title>
+> ![a screenshot of the GTN metadata box showing a dropdown for input histories and answer histories. The answer histories features two examples one on UseGalaxy.eu and an older alevin one, each with a date. In the dropdown is also a link to an FAQ titled how to use this](images/example-histories.png)
+{: .code-out}
 
 ## Workflows
 
 In some tutorials you aren't as interested in teaching users the individual steps for analysing data, but rather want to focus on some downstream aspects of analysis, or to showcase the best practice workflows that are already available for a user to use! In those cases it can be useful to have a nicer way of inviting the user to execute those steps.
+
+If you are accessing these in tutorial mode, they should function as button that, when clicked, launch the workflow directly. Outside of tutorial mode, they will link to our redirection service which will let you supply which Galaxy you plan to use.
+
+Note that if for some reason the 'fancy' method doesn't work, there are fallback tip boxes to help a user execute a similar procedure manually.
+
+### GTN Workflows
+
+If you've included the workflow in the GTN but haven't uploaded to a repository yet:
+
+{% raw %}
+```markdown
+{% snippet faqs/galaxy/workflows_run_trs.md path="topics/assembly/tutorials/largegenome/workflows/Galaxy-Workflow-Data_QC.ga" title="Galaxy Workflow Data QC" %}
+```
+{% endraw %}
+
+Rendered:
+
+{% snippet faqs/galaxy/workflows_run_trs.md path="topics/assembly/tutorials/largegenome/workflows/Galaxy-Workflow-Data_QC.ga" title="Galaxy Workflow Data QC" %}
+
 
 ### WorkflowHub
 
@@ -946,13 +988,13 @@ Please note that the dockstore ID should be provided without the `#` character.
 
 {% raw %}
 ```markdown
-{% snippet faqs/galaxy/workflows_run_ds.md title="My Cool Workflow" dockstore_id="workflow/github.com/jmchilton/galaxy-workflow-dockstore-example-1/mycoolworkflow" %}
+{% snippet faqs/galaxy/workflows_run_ds.md title="My Cool Workflow" dockstore_id="github.com/jmchilton/galaxy-workflow-dockstore-example-1/mycoolworkflow" %}
 ```
 {% endraw %}
 
 Rendered:
 
-{% snippet faqs/galaxy/workflows_run_ds.md title="My Cool Workflow" dockstore_id="workflow/github.com/jmchilton/galaxy-workflow-dockstore-example-1/mycoolworkflow" %}
+{% snippet faqs/galaxy/workflows_run_ds.md title="My Cool Workflow" dockstore_id="github.com/jmchilton/galaxy-workflow-dockstore-example-1/mycoolworkflow" %}
 
 This snippet has the same behaviour, it will use my.galaxy.training links to make them server independent, but in Tutorial Mode it will open on the current server.
 
@@ -1194,6 +1236,25 @@ And then they can wrap the relevant sections with a `div` block with the relevan
 {: .code-2col}
 
 This can also be used inline: My favourite fruit is an <span class="Ananas">🍍</span><span class="Avocados">🥑</span>.
+
+> <tip-title>Multiple, Disconnected CYOAs</tip-title>
+> If you wish to have multiple CYOAs in a single tutorial, you are free to do that! However you must:
+>
+> 1. Ensure that all options are disjoint, there should not be any shared terms! (I.e if the both CYOAs need to use "STAR", please find a different way to phrase it, or even use "STAR ", it just needs to be different.)
+> 2. Provide a disambiguation term for them, passed as a parameter to all, or all but one, includes.
+>
+> This disambiguation term will affect the URL parameter, which will become `?gtn-cyoa{term}={value}`
+>
+> E.g.:
+>
+> ```
+> {% raw %}
+> {% include _includes/cyoa-choices.html option1="Oui" option2="Non" default="Oui" text="Vos données ESTAMP sont prêtes ?" %}
+> {% include _includes/cyoa-choices.html option1="Yes" option2="No" text="Do the thing?" disambiguation="english" %}
+> {% endraw %}
+> ```
+{: .tip}
+
 
 ### URL Parameter
 
