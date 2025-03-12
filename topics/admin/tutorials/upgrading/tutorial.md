@@ -56,12 +56,25 @@ We can upgrade our Galaxy version by modifying the Ansible var files and re-runn
 
 This tutorial will show you how and discuss some of the things you need to keep in mind whenever you are updating or upgrading your Galaxy server.
 
-## Some notes on Galaxy versioning and releases.
+## The Galaxy Release Process
 
-* As at June 2021, Galaxy has three new version releases per year - in each of January, May and September. The versions are denominated by the year and month - `YY.MM`. i.e. January 2021's Galaxy release is version *21.01*.
-* Official Galaxy versions are tagged on the [Galaxy Project's GitHub releases page](https://github.com/galaxyproject/galaxy/releases) as `vYY.MM`. e.g. *v21.01*
-* Each version also has an official branch in the GitHub repo named `release_YY.MM`. e.g. *release_21.01*
+The latest updates on the Galaxy release proces can be found here: https://docs.galaxyproject.org/en/master/project/releases.html
+
+- Long Term Support (LTS) releases happen annually, in the first quarter.
+A LTS release is a major version update that receives significant and thorough end-to-end testing by a dedicated team, and will be supported and receive bugfixes until the next LTS. As such, this release is ideally targeted for production use by local Galaxy administrators.
+
+- Minor Releases: usually 2-3 times a year, generally in the early summer and fall.
+Throughout the year, Galaxy also ships several (usually 2-3) minor releases. These are version updates like 24.1, 24.2. These can also include significant updates, new features, etc. and follow the same release-testing protocol as with the LTS release. These are targeted for administrators who want to stay up to date with the latest features and improvements. Usegalaxy.org deploys new minor releases as a part of the release process.
+
+- Point Releases: As needed.
+Point releases (e.g. 24.1.1) are issued to address bug fixes and security updates. These are not scheduled and are released as needed. Following the Git release branch (i.e. release_24.1) is recommended to stay up to date with these.
+
+Please note that the release dates can vary based on the development process and testing results.
+
+* Official Galaxy versions are tagged on the [Galaxy Project's GitHub releases page](https://github.com/galaxyproject/galaxy/releases) e.g. *v24.1*
+* Each version also has an official branch in the GitHub repo named `release_YY.N`. e.g. *release_24.1*
 * Galaxy versions will be supported with security fixes, bug patches and other improvements for [one year](https://github.com/galaxyproject/galaxy/blob/dev/SECURITY.md#supported-versions) from the time of release at which time they will become "End of Life" and will no longer be supported.
+
 
 > <agenda-title></agenda-title>
 >
@@ -72,7 +85,7 @@ This tutorial will show you how and discuss some of the things you need to keep 
 
 ## This tutorial assumes that:
 
-- You have a VM or machine where you you have Galaxy installed.
+- You have a VM or machine where you have Galaxy installed.
 - You have completed at least the "Galaxy Installation with Ansible" tutorial.
 - You have command line and sudo access to the VM/computer where it is installed.
 
@@ -249,11 +262,67 @@ Once you've made sure of these things, it's time to do it!
 
 You should see in the Ansible output that Galaxy had to rebuild the client, update the database, rebuild its virtual environment and restart. If you weren't using Ansible, these steps would all be manual and important not to get wrong. Ansible makes the entire process super simple for us.
 
-Congratulations, you're Galaxy server should now be updated to the latest version. You can check this by going to the Admin UI page or by using the API as described above.
+Congratulations, your Galaxy server should now be updated to the latest version. You can check this by going to the Admin UI page or by using the API as described above.
+
+> <hands-on-title>Upgrade checklist</hands-on-title>
+> If you are ready to perform your upgrade, the following checklist could inspire you into performing some important steps to ensure a successful Galaxy upgrade. It includes points important in a change management process.
+>
+> ### Pre-upgrade
+> - [ ] Make sure all changes to the codebase are tracked by Git (make enough commits with clear commit messages) 
+>   - [ ] Work in one pull request that reflect all changes made to infrastructure, documentation, frontpage, etc.
+>   - [ ] Assign a technical and/or peer reviewer to verify your changes
+>   - [ ] Include regression steps and verification
+> - [ ] Review release notes for new features, deprecations, and breaking changes 
+> - [ ] Assess the upgrade's impact on workflows, tools, data formats, and integrations
+> - [ ] Evaluate changes in resource requirements and dependencies (Python version, libraries/containers, Linux distribution, VM size and computational powers,...)
+> - [ ] Choose a maintenance window with minimal user impact
+> - [ ] Asses expected alerts from monitoring and notify colleagues where necessary
+>
+> ### Back up strategy
+> - [ ] Initiate back up plan and asses if current back up system needs to be suspended
+> - [ ] Perform a full backup of the PostgreSQL database
+> - [ ] Verify that backups are complete and functional
+>   - [ ] Reinstate backups in duplicate setup  
+> 
+> ### Test Upgrade
+> - [ ] Perform upgrade in a test instance that mirrors production
+>   - [ ] Authentication method(s)
+>   - [ ] Email notifications & activation link
+>   - [ ] Uploading data 
+>   - [ ] Running a tool 
+>   - [ ] Running a workflow 
+>   - [ ] Exporting data 
+>   - [ ] Exporting workflow runs 
+>   - [ ] Making a new history 
+>   - [ ] Removing data 
+>   - [ ] Removing histories
+>   - [ ] Pulsar
+>   - [ ] Bring Your Own Storage connection
+> 
+### Production Upgrade
+If the Tests on the test instance were successful, initiate poduction upgrade process.
+> - [ ] Notify users about the planned upgrade, schedule, and anticipated downtime 
+>   - [ ] Make a pull request to add a notice banner via notices.yml in the relevant repository
+>   - [ ] Merge notice banner at least one week in advance 
+> - [ ] Make a draft pull request for a news item, which includes emphasis on reporting unexpected behavior, and any new features or changes 
+> - [ ] See if the GDPR compliance / data policy page requires updating after the new changes
+> - [ ] Roll back if significant issues arise, following the regression steps
+>
+> ### Post-upgrade
+> - [ ] Conduct post-upgrade testing (see test upgrade list from above) to ensure functionality in the production environment
+> - [ ] Merge PR on news item & reverse notice banner when change is complete   
+> - [ ] Make sure that any config, dependency or infrastructure changes have been documented
+>
+> ### Continuous improvement
+> - [ ] Review lessons learned from the upgrade process
+> - [ ] Update the upgrade checklist and procedures accordingly
+> - [ ] Begin preparing for the next Galaxy release
+> - [ ] Monitor CVEs and patches from upstream and redeploy  
+{: .hands_on}
 
 # Ongoing maintenance
 
-The Galaxy development community continually support release versions of Galaxy [for 1 year.](https://github.com/galaxyproject/galaxy/blob/dev/SECURITY.md#supported-versions) They regularly update releases with bug fixes, patches and security enhancements. Therefore it is important that we as administrators keep our Galaxy servers up to date regardless of which release we are running.
+The Galaxy development community continually support release versions of Galaxy [for 1 year](https://github.com/galaxyproject/galaxy/blob/dev/SECURITY.md#supported-versions). They regularly update releases with bug fixes, patches and security enhancements. Therefore it is important that we as administrators keep our Galaxy servers up to date regardless of which release we are running.
 
 The easiest way to do this is to regularly re-run the Ansible playbook. It will check with GitHub and grab any new changes to Galaxy since the last time you ran it and automatically keep everything up to date. The large **usegalaxy.\*** servers all re-run the playbook on a regular schedule for this purpose.
 
